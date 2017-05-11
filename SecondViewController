@@ -1,0 +1,113 @@
+import Foundation
+import UIKit
+import AVFoundation
+import Social
+
+
+class SecondViewController: UIViewController {
+  
+    var audioPlayer2 = AVAudioPlayer()
+
+    
+    @IBOutlet weak var videoView: UIWebView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        //if URL is correct; display youtube/video URL
+        do {
+            audioPlayer2 = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "page", ofType: "mp3")!))
+            audioPlayer2.prepareToPlay()
+            
+        }
+            //catch and print error if not
+        catch {
+            print(error)
+        }
+        
+        //link to youtube URL of black dog video
+        let youtubeURL = "https://www.youtube.com/embed/XiCrniLQGYc"
+        
+        videoView.allowsInlineMediaPlayback = true
+        
+        videoView.loadHTMLString("<iframe width=\"\(videoView.frame.width)\" height=\"\(videoView.frame.height)\" src=\"\(youtubeURL)?&playsinline=1\" frameborder=\"0\" allowfullscreen></iframe>", baseURL: nil)
+       
+     
+        
+       
+            func performSegueToReturnBack()  {
+                if let nav = self.navigationController {
+                  
+                    nav.popViewController(animated: true)
+                } else {
+              
+                    self.dismiss(animated: true, completion: nil)
+                }
+            
+        }
+        
+        
+    }
+    
+    //facebook share functionality
+    @IBAction func facebookShare(_ sender: Any) {
+        let alert = UIAlertController(title: "Share", message: "Share help site?", preferredStyle: .actionSheet)
+        
+        //First Action
+        let action = UIAlertAction(title: "Share on Facebook", style: .default) { (action) in print ("SUCCESS")
+            
+            if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook)
+            {
+                let post = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
+                
+                post?.setInitialText("If you ever need help")
+                post?.add(UIImage(named: "img.png"))
+                
+                self.present(post!, animated: true, completion: nil)
+            } else {
+                alert.addAction(action)
+                self.showAlert(service: "Facebook")
+            }
+        }
+    }
+    
+    //twitter share functionality
+    @IBAction func twitterShare(_ sender: Any) {
+        let alert = UIAlertController(title: "Share", message: "Share help site?", preferredStyle: .actionSheet)
+        
+        //First Action
+        let action = UIAlertAction(title: "Share on Twitter", style: .default) { (action) in print ("SUCCESS")
+            
+            if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTwitter)
+            {
+                let post = SLComposeViewController(forServiceType: SLServiceTypeTwitter)
+                
+                post?.setInitialText("If you ever need help")
+                post?.add(UIImage(named: "img.png"))
+                
+                self.present(post!, animated: true, completion: nil)
+            } else {
+                alert.addAction(action)
+                self.showAlert(service: "Twitter")
+            }
+        }
+    }
+    
+    func showAlert (service:String) {
+        let alert = UIAlertController(title: "Error", message: "You are not connected to \(service)", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Dismiss", style: .cancel, handler: nil)
+        
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    
+    
+  
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
+        audioPlayer2.play()
+    }
+    
+}
+

@@ -1,0 +1,290 @@
+import UIKit
+import AVFoundation
+import SpriteKit
+
+
+
+
+class ViewController: UIViewController {
+    
+    @IBOutlet weak var menuView: UIView!
+    
+    @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
+    
+    @IBOutlet var soundView: UIView!
+    @IBOutlet var infoView: UIView!
+    
+    @IBOutlet weak var slider: UISlider!
+    
+    @IBOutlet weak var visualEffectView: UIVisualEffectView!
+    
+    
+    @IBOutlet weak var background: UIImageView!
+
+    @IBOutlet weak var musicButton: UIButton!
+    @IBOutlet weak var soundButton: UIButton!
+    
+    
+    var test = 0
+    var effect:UIVisualEffect!
+    var menuShowing = false
+    
+    var audioPlayer = AVAudioPlayer()
+    
+    var audioPlayer2 = AVAudioPlayer()
+    
+    var musicPlayer = AVAudioPlayer()
+    
+    var buttonPlayer = AVAudioPlayer()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.playSound(file: "fire", ext: "mp3")
+        
+        /*
+        let oldCenter = view.center
+        let newCenter = CGPoint(x: oldCenter.x - 400, y: oldCenter.y)
+        UIView.animate(withDuration: 4.0, delay: 0.0, options:
+            [.curveLinear, .repeat], animations: {
+                self.view.center = newCenter
+        }, completion: nil)
+    */ // attempts at animating menu view
+        
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "page", ofType: "mp3")!))
+            audioPlayer.prepareToPlay()
+        }
+        catch {
+            print(error)
+        }
+        
+        do {
+            buttonPlayer = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "click", ofType: "wav")!))
+            buttonPlayer.prepareToPlay()
+        }
+        catch {
+            print(error)
+        }
+        
+        do {
+            musicPlayer = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "forest", ofType: "mp3")!))
+            musicPlayer.prepareToPlay()
+            
+        
+        }
+        catch {
+            print(error)
+        }
+
+        //infinite loops of soundtrack
+        musicPlayer.numberOfLoops = -1
+        musicPlayer.play()
+        
+        effect = visualEffectView.effect
+        visualEffectView.effect = nil
+        
+        soundView.layer.cornerRadius = 5
+        
+        menuView.layer.shadowOpacity = 1
+        menuView.layer.shadowRadius = 6
+    }
+    
+        
+    /*
+    
+     override func viewDidAppear(animated: Bool) {
+     super.viewDidAppear(animated)
+     self.customView.backgroundColor = UIColor(red: 0.0, green: 255.0 , blue: 255.0, alpha: 1.0)
+     dispatch_async(dispatch_get_main_queue(), {
+     self.performAnimation()
+     
+     })
+     
+     }
+     
+     func performAnimation() {
+     
+     UIView.animateWithDuration(2.0, delay: 0.5, options: .CurveEaseOut | .Repeat | .Autoreverse, animations: {
+     self.customView.alpha = 0.0
+     }, completion: nil)
+     
+     }
+    
+    */
+   
+       
+   
+    func animateIn () {
+        self.view.addSubview(soundView)
+        soundView.center = self.view.center
+        soundView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+        soundView.alpha = 0
+        
+        UIView.animate(withDuration: 0.4) {
+            self.visualEffectView.effect = self.effect
+            self.soundView.alpha = 1
+            self.soundView.transform = CGAffineTransform.identity
+            
+        }
+    }
+    
+    func animateIn2 () {
+        self.view.addSubview(infoView)
+        infoView.center = self.view.center
+        infoView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+        infoView.alpha = 0
+        
+        UIView.animate(withDuration: 0.4) {
+            self.visualEffectView.effect = self.effect
+            self.infoView.alpha = 1
+            self.infoView.transform = CGAffineTransform.identity
+            
+        }
+    }
+    
+    func animateOut() {
+        UIView.animate(withDuration: 0.3, animations: {
+            
+            self.soundView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+            self.soundView.alpha = 0
+            
+            self.visualEffectView.effect = nil
+            
+            
+        }) { (success:Bool) in
+            self.soundView.removeFromSuperview()
+        }
+    }
+    
+    func animateOut2() {
+        UIView.animate(withDuration: 0.3, animations: {
+            
+            self.infoView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+            self.infoView.alpha = 0
+            
+            self.visualEffectView.effect = nil
+            
+            
+        }) { (success:Bool) in
+            self.infoView.removeFromSuperview()
+        }
+    }
+    
+    @IBAction func changeMusic(_ sender: Any) {
+        
+        if musicPlayer.isPlaying {
+            //button.setTitle("Button Title",for: .normal)
+        musicPlayer.stop()
+            musicButton.setTitle("Enable Music",for: .normal)
+        }
+        else {
+           // button.setTitle("Button Title",for: .normal)
+            musicButton.setTitle("Disable Music",for: .normal)
+            musicPlayer.play()
+        }
+        
+    }
+    
+    func playSound(file:String, ext:String) -> Void {
+        do {
+            let url = URL.init(fileURLWithPath: Bundle.main.path(forResource: file, ofType: ext)!)
+            audioPlayer2 = try AVAudioPlayer(contentsOf: url)
+            audioPlayer2.prepareToPlay()
+            audioPlayer2.play()
+        } catch let error {
+            NSLog(error.localizedDescription)
+        }
+    }
+    
+    
+    @IBAction func changeEffects(_ sender: Any) {
+       
+        
+        if test == 0 {
+            //button.setTitle("Button Title",for: .normal)
+        buttonPlayer.volume = 0
+        audioPlayer.volume = 0
+        test = 1
+            
+            
+            soundButton.setTitle("Enable Sound",for: .normal)
+            
+        }
+            
+        else
+        {
+           //button.setTitle("Button Title",for: .normal)
+            buttonPlayer.volume = 5
+            audioPlayer.volume = 50
+            test = 0
+            
+            
+            soundButton.setTitle("Disable Sound",for: .normal)
+        }
+    }
+    
+    
+    @IBAction func adjustSound(_ sender: Any) {
+        buttonPlayer.play()
+        animateIn()
+    }
+    
+    @IBAction func dismissAction(_ sender: Any) {
+        buttonPlayer.play()
+        animateOut()
+    }
+    
+    @IBAction func findInfo(_ sender: Any) {
+        buttonPlayer.play()
+        animateIn2()
+    }
+    
+    @IBAction func dismissAction2(_ sender: Any) {
+        buttonPlayer.play()
+        animateOut2()
+    }
+   
+    @IBAction func openMenu(_ sender: Any) {
+        buttonPlayer.play()
+        if (menuShowing) {
+            leadingConstraint.constant = -190
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                self.view.layoutIfNeeded()
+            })
+        } else {
+        leadingConstraint.constant = 0
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                self.view.layoutIfNeeded()
+            })
+        }
+        
+        menuShowing = !menuShowing
+    }
+   
+   
+    @IBAction func beginButton(_ sender: Any) {
+        audioPlayer.play()
+            }
+    
+
+    @IBAction func watchButton(_ sender: Any) {
+    
+            audioPlayer.play()
+
+    }
+    
+    @IBAction func contactButton(_ sender: Any) {
+        audioPlayer.play()
+    }
+    
+    @IBAction func licensesButton(_ sender: Any) {
+        audioPlayer.play()
+    }
+    
+    
+
+}
+

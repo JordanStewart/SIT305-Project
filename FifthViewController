@@ -1,0 +1,42 @@
+
+import Foundation
+import UIKit
+import AVFoundation
+
+class FifthViewController: UIViewController {
+    
+    var audioPlayer = AVAudioPlayer()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: "page", ofType: "mp3")!))
+            audioPlayer.prepareToPlay()
+        }
+        catch {
+            print(error)
+        }
+        
+        func performSegueToReturnBack()  {
+            if let nav = self.navigationController {
+                 audioPlayer.play()
+                nav.popViewController(animated: true)
+            } else {
+                 audioPlayer.play()
+                self.dismiss(animated: true, completion: nil)
+            }
+            
+        }
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
+        audioPlayer.play()
+    }
+    
+    
+    
+    
+}
